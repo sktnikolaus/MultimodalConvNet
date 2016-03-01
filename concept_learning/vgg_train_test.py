@@ -2,6 +2,7 @@ import os
 import sys
 import caffe
 from pylab import *
+import time
 
 from caffe import layers as L
 from caffe import params as P
@@ -16,7 +17,8 @@ from caffe import params as P
 #with open('lenet_auto_test.prototxt', 'w') as f:
 #    f.write(str(lenet(TESTING_FILENAME, 100)))
 loss_interval = 10
-log_file = open('log.txt','w')
+t = time.strftime("%H:%M:%S")
+log_file = open('log_'+t+'.txt','w')
 
 
 # SETTING CAFFE
@@ -40,7 +42,7 @@ loss = [[] for i in xrange(19)]
 accuracies = [[] for i in xrange(19)]
 TPRs = [[] for i in xrange(19)]
 precs = [[] for i in xrange(19)]
-
+testrange = 1000
 try:
     for it in range(niter):
         solver.step(1)  # SGD by Caffe
@@ -50,8 +52,11 @@ try:
    	#train_loss[it] = solver.net.blobs['loss'].data
     	if it % loss_interval == 0:
 	    for idx,concept in enumerate(label_list):
-	    	loss[idx].append(solver.net.blobs['loss_'+concept].data)
-	    # store the output on the first test batch
+	    	#loss[idx].append(solver.net.blobs['loss_'+concept].data)
+		c_loss = str(solver.net.blobs['loss_'+concept].data)
+		print c_loss
+		loss[idx].append(c_loss)
+	# store the output on the first test batch
     	# (start the forward pass at conv1 to avoid loading new data)
     	solver.test_nets[0].forward(start='conv1')
     
@@ -66,7 +71,7 @@ try:
 	    pred_positives = np.zeros((no_concepts))
 	    TPR = np.zeros((no_concepts))
         
-            for test_it in range(100):
+            for test_it in range(testrange):
                 solver.test_nets[0].forward()
 
 	        for idx,concept in enumerate(label_list):
@@ -83,20 +88,24 @@ try:
 	    sens = [TPR[idx]/float(true_positives[idx]) for idx in xrange(19)]
 
 	    print "TPR",sens
-	    print "Accuracy",correct/float(2400)
+	    print "Accuracy",correct/float(24*testrange)
 	    prec = [TPR[idx]/float(pred_positives[idx]) for idx in xrange(19)]
 	    print "Precision",prec
 	    for idx in xrange(19):
-	        accuracies[idx].append(correct[idx]/float(2400))
-	        TPRs[idx].append(sens)
-	        precs[idx].append(prec)
+	        accuracies[idx].append(correct[idx]/float(24*testrange))
+	        TPRs[idx].append(sens[idx])
+	        precs[idx].append(prec[idx])
 
 except KeyboardInterrupt:
     for idx,concept in enumerate(label_list):
         concept_loss = ','.join([str(elem) for elem in loss[idx]])
-	log_file.write('Loss: '+label_list+'='+concept_loss+'\n')
-    for idx,concept in enumerate(label_list):    
-	log_file.write('Accuracy: '+label_list+'='+','.join([str(elem) for elem in accuracies[idx]])+'\n')
+	log_file.write('Loss: '+concept+'=['+concept_loss+']\n')
+    for idx,concept in enumerate(label_list):   
+        log_file.write('Accuracy: '+concept+'=['+','.join([str(elem) for elem in accuracies[idx]])+']\n')
+    for idx,concept in enumerate(label_list):
+        log_file.write('TPR: '+concept+'=['+','.join([str(elem) for elem in TPRs[idx]])+']\n')
+    for idx,concept in enumerate(label_list):
+        log_file.write('Precisions: '+concept+'=['+','.join([str(elem) for elem in precs[idx]])+']\n')    
     #log_file.write(TPRs)
     #log_file.write(precs)
     log_file.close()
