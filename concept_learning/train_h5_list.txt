@@ -1,0 +1,7 @@
+data/train0.h5
+data/train1.h5
+data/train2.h5
+data/train3.h5
+data/train4.h5
+data/train5.h5
+data/train6.h5

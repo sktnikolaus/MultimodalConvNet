@@ -1,0 +1,591 @@
+name: "VGG_CNN_S"
+layer{
+  name: "data"
+  type: "HDF5Data"
+  top: "X"
+  top: "label_landscape"
+  top: "label_wildlife"
+  top: "label_travel"
+  top: "label_vacation"
+  top: "label_sunrise"
+  top: "label_sunset"
+  top: "label_night"
+  top: "label_art"
+  top: "label_architecture"
+  top: "label_urban"
+  top: "label_abandoned"
+  top: "label_beautiful"
+  top: "label_cute"
+  top: "label_love"
+  top: "label_beauty"
+  top: "label_summer"
+  top: "label_autumn"
+  top: "label_winter"
+  top: "label_spring"
+  include {
+    phase: TRAIN
+  }
+  hdf5_data_param {
+    source: "data/train_h5_list.txt"
+    batch_size: 24
+  }
+}
+layer{
+  name: "data"
+  type: "HDF5Data"
+  top: "X"
+  top: "label_landscape"
+  top: "label_wildlife"
+  top: "label_travel"
+  top: "label_vacation"
+  top: "label_sunrise"
+  top: "label_sunset"
+  top: "label_night"
+  top: "label_art"
+  top: "label_architecture"
+  top: "label_urban"
+  top: "label_abandoned"
+  top: "label_beautiful"
+  top: "label_cute"
+  top: "label_love"
+  top: "label_beauty"
+  top: "label_summer"
+  top: "label_autumn"
+  top: "label_winter"
+  top: "label_spring"
+  include {
+    phase: TEST
+  }
+  hdf5_data_param {
+    source: "data/val_h5_list.txt"
+    batch_size: 24
+  }
+} 
+layers {
+  bottom: "X"
+  top: "conv1"
+  name: "conv1"
+  type: "Convolution"
+  convolution_param {
+    num_output: 96
+    kernel_size: 7
+    stride: 2
+  }
+}
+layers {
+  bottom: "conv1"
+  top: "conv1"
+  name: "relu1"
+  type: "ReLU"
+}
+layers {
+  bottom: "conv1"
+  top: "norm1"
+  name: "norm1"
+  type: "LRN"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0005
+    beta: 0.75
+    k: 2
+  }
+}
+layers {
+  bottom: "norm1"
+  top: "pool1"
+  name: "pool1"
+  type: "Pooling"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 3
+  }
+}
+layers {
+  bottom: "pool1"
+  top: "conv2"
+  name: "conv2"
+  type: "Convolution"
+  convolution_param {
+    num_output: 256
+    kernel_size: 5
+  }
+}
+layers {
+  bottom: "conv2"
+  top: "conv2"
+  name: "relu2"
+  type: "ReLU"
+}
+layers {
+  bottom: "conv2"
+  top: "pool2"
+  name: "pool2"
+  type: "Pooling"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layers {
+  bottom: "pool2"
+  top: "conv3"
+  name: "conv3"
+  type: "Convolution"
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
+}
+layers {
+  bottom: "conv3"
+  top: "conv3"
+  name: "relu3"
+  type: "ReLU"
+}
+layers {
+  bottom: "conv3"
+  top: "conv4"
+  name: "conv4"
+  type: "Convolution"
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
+}
+layers {
+  bottom: "conv4"
+  top: "conv4"
+  name: "relu4"
+  type: "ReLU"
+}
+layers {
+  bottom: "conv4"
+  top: "conv5"
+  name: "conv5"
+  type: "Convolution"
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
+}
+layers {
+  bottom: "conv5"
+  top: "conv5"
+  name: "relu5"
+  type: "ReLU"
+}
+layers {
+  bottom: "conv5"
+  top: "pool5"
+  name: "pool5"
+  type: "Pooling"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 3
+  }
+}
+layers {
+  bottom: "pool5"
+  top: "fc6"
+  name: "fc6"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 4096
+  }
+}
+layers {
+  bottom: "fc6"
+  top: "fc6"
+  name: "relu6"
+  type: "ReLU"
+}
+layers {
+  bottom: "fc6"
+  top: "fc6"
+  name: "drop6"
+  type: "Dropout"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc6"
+  top: "fc7"
+  name: "fc7"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 4096
+  }
+}
+layers {
+  bottom: "fc7"
+  top: "fc7"
+  name: "relu7"
+  type: "ReLu"
+}
+layers {
+  bottom: "fc7"
+  top: "fc7"
+  name: "drop7"
+  type: "Dropout"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc7"
+  top: "fc8"
+  name: "fc8"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 1000
+  }
+}
+layer {
+  name: "loss_landscape"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_landscape"
+  top: "loss_landscape"
+  loss_weight: 1
+}
+layer {
+  name: "accuracy_landscape"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_landscape"
+  top: "accuracy_landscape"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss_wildlife"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_wildlife"
+  top: "loss_wildlife"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_wildlife"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_wildlife"
+  top: "accuracy_wildlife"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_travel"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_travel"
+  top: "loss_travel"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_travel"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_travel"
+  top: "accuracy_travel"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_vacation"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_vacation"
+  top: "loss_vacation"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_vacation"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_vacation"
+  top: "accuracy_vacation"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_sunrise"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_sunrise"
+  top: "loss_sunrise"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_sunrise"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_sunrise"
+  top: "accuracy_sunrise"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_sunset"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_sunset"
+  top: "loss_sunset"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_sunset"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_sunset"
+  top: "accuracy_sunset"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_night"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_night"
+  top: "loss_night"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_night"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_night"
+  top: "accuracy_night"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_art"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_art"
+  top: "loss_art"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_art"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_art"
+  top: "accuracy_art"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_architecture"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_architecture"
+  top: "loss_architecture"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_architecture"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_architecture"
+  top: "accuracy_architecture"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_urban"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_urban"
+  top: "loss_urban"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_urban"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_urban"
+  top: "accuracy_urban"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_abandoned"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_abandoned"
+  top: "loss_abandoned"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_abandoned"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_abandoned"
+  top: "accuracy_abandoned"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_beautiful"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_beautiful"
+  top: "loss_beautiful"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_beautiful"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_beautiful"
+  top: "accuracy_beautiful"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_cute"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_cute"
+  top: "loss_cute"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_cute"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_cute"
+  top: "accuracy_cute"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_love"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_love"
+  top: "loss_love"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_love"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_love"
+  top: "accuracy_love"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_beauty"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_beauty"
+  top: "loss_beauty"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_beauty"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_beauty"
+  top: "accuracy_beauty"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_summer"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_summer"
+  top: "loss_summer"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_summer"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_summer"
+  top: "accuracy_summer"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_autumn"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_autumn"
+  top: "loss_autumn"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_autumn"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_autumn"
+  top: "accuracy_autumn"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_winter"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_winter"
+  top: "loss_winter"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_winter"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_winter"
+  top: "accuracy_winter"
+  include {
+    phase: TEST
+  } 
+} 
+layer {
+  name: "loss_spring"
+  type: "SoftmaxWithLoss"
+  bottom: "fc8"
+  bottom: "label_spring"
+  top: "loss_spring"
+  loss_weight: 1
+} 
+layer {
+  name: "accuracy_spring"
+  type: "Accuracy"
+  bottom: "fc8"
+  bottom: "label_spring"
+  top: "accuracy_spring"
+  include {
+    phase: TEST
+  } 
+} 
