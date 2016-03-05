@@ -1,0 +1,477 @@
+name: "VGG_CNN_S"
+input: "X"
+input_dim: 10
+input_dim: 3
+input_dim: 224
+input_dim: 224
+layer {
+  name: "conv1"
+  type: "Convolution"
+  bottom: "X"
+  top: "conv1"
+  convolution_param {
+    num_output: 96
+    kernel_size: 7
+    stride: 2
+  }
+}
+layer {
+  bottom: "conv1"
+  top: "conv1"
+  name: "relu1"
+  type: "ReLU"
+}
+layer {
+  bottom: "conv1"
+  top: "norm1"
+  name: "norm1"
+  type: "LRN"
+  lrn_param {
+    local_size: 5
+    alpha: 0.0005
+    beta: 0.75
+    k: 2
+  }
+}
+layer {
+  bottom: "norm1"
+  top: "pool1"
+  name: "pool1"
+  type: "Pooling"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 3
+  }
+}
+layer {
+  bottom: "pool1"
+  top: "conv2"
+  name: "conv2"
+  type: "Convolution"
+  convolution_param {
+    num_output: 256
+    kernel_size: 5
+  }
+}
+layer {
+  bottom: "conv2"
+  top: "conv2"
+  name: "relu2"
+  type: "ReLU"
+}
+layer {
+  bottom: "conv2"
+  top: "pool2"
+  name: "pool2"
+  type: "Pooling"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  bottom: "pool2"
+  top: "conv3"
+  name: "conv3"
+  type: "Convolution"
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
+}
+layer {
+  bottom: "conv3"
+  top: "conv3"
+  name: "relu3"
+  type: "ReLU"
+}
+layer {
+  bottom: "conv3"
+  top: "conv4"
+  name: "conv4"
+  type: "Convolution"
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
+}
+layer {
+  bottom: "conv4"
+  top: "conv4"
+  name: "relu4"
+  type: "ReLU"
+}
+layer {
+  bottom: "conv4"
+  top: "conv5"
+  name: "conv5"
+  type: "Convolution"
+  convolution_param {
+    num_output: 512
+    pad: 1
+    kernel_size: 3
+  }
+}
+layer {
+  bottom: "conv5"
+  top: "conv5"
+  name: "relu5"
+  type: "ReLU"
+}
+layer {
+  bottom: "conv5"
+  top: "pool5"
+  name: "pool5"
+  type: "Pooling"
+  pooling_param {
+    pool: MAX
+    kernel_size: 3
+    stride: 3
+  }
+}
+layer {
+  bottom: "pool5"
+  top: "fc6"
+  name: "fc6"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 4096
+  }
+}
+layer {
+  bottom: "fc6"
+  top: "fc6"
+  name: "relu6"
+  type: "ReLU"
+}
+layer {
+  bottom: "fc6"
+  top: "fc6"
+  name: "drop6"
+  type: "Dropout"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  bottom: "fc6"
+  top: "fc7"
+  name: "fc7"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 4096
+  }
+}
+layer {
+  bottom: "fc7"
+  top: "fc7"
+  name: "relu7"
+  type: "ReLU"
+}
+layer {
+  bottom: "fc7"
+  top: "fc7"
+  name: "drop7"
+  type: "Dropout"
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layer {
+  bottom: "fc7"
+  top: "fc8"
+  name: "fc8"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 1000
+  }
+}
+layer {
+  bottom: "fc8"
+  top: "fc9_landscape"
+  name: "fc9_landscape"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_landscape"
+  type: "Softmax"
+  bottom: "fc9_landscape"
+  top: "prob_landscape"
+}
+layer {
+  bottom: "fc8"
+  top: "fc9_wildlife"
+  name: "fc9_wildlife"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_wildlife"
+  type: "Softmax"
+  bottom: "fc9_wildlife"
+  top: "prob_wildlife"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_travel"
+  name: "fc9_travel"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_travel"
+  type: "Softmax"
+  bottom: "fc9_travel"
+  top: "prob_travel"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_vacation"
+  name: "fc9_vacation"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_vacation"
+  type: "Softmax"
+  bottom: "fc9_vacation"
+  top: "prob_vacation"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_sunrise"
+  name: "fc9_sunrise"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_sunrise"
+  type: "Softmax"
+  bottom: "fc9_sunrise"
+  top: "prob_sunrise"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_sunset"
+  name: "fc9_sunset"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_sunset"
+  type: "Softmax"
+  bottom: "fc9_sunset"
+  top: "prob_sunset"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_night"
+  name: "fc9_night"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_night"
+  type: "Softmax"
+  bottom: "fc9_night"
+  top: "prob_night"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_art"
+  name: "fc9_art"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_art"
+  type: "Softmax"
+  bottom: "fc9_art"
+  top: "prob_art"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_architecture"
+  name: "fc9_architecture"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_architecture"
+  type: "Softmax"
+  bottom: "fc9_architecture"
+  top: "prob_architecture"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_urban"
+  name: "fc9_urban"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_urban"
+  type: "Softmax"
+  bottom: "fc9_urban"
+  top: "prob_urban"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_abandoned"
+  name: "fc9_abandoned"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_abandoned"
+  type: "Softmax"
+  bottom: "fc9_abandoned"
+  top: "prob_abandoned"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_beautiful"
+  name: "fc9_beautiful"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_beautiful"
+  type: "Softmax"
+  bottom: "fc9_beautiful"
+  top: "prob_beautiful"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_cute"
+  name: "fc9_cute"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_cute"
+  type: "Softmax"
+  bottom: "fc9_cute"
+  top: "prob_cute"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_love"
+  name: "fc9_love"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_love"
+  type: "Softmax"
+  bottom: "fc9_love"
+  top: "prob_love"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_beauty"
+  name: "fc9_beauty"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_beauty"
+  type: "Softmax"
+  bottom: "fc9_beauty"
+  top: "prob_beauty"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_summer"
+  name: "fc9_summer"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_summer"
+  type: "Softmax"
+  bottom: "fc9_summer"
+  top: "prob_summer"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_autumn"
+  name: "fc9_autumn"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_autumn"
+  type: "Softmax"
+  bottom: "fc9_autumn"
+  top: "prob_autumn"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_winter"
+  name: "fc9_winter"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_winter"
+  type: "Softmax"
+  bottom: "fc9_winter"
+  top: "prob_winter"
+} 
+layer {
+  bottom: "fc8"
+  top: "fc9_spring"
+  name: "fc9_spring"
+  type: "InnerProduct"
+  inner_product_param {
+    num_output: 2
+  }
+}
+layer {
+  name: "prob_spring"
+  type: "Softmax"
+  bottom: "fc9_spring"
+  top: "prob_spring"
+} 

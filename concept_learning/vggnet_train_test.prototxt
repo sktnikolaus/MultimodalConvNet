@@ -26,7 +26,7 @@ layer{
     phase: TRAIN
   }
   hdf5_data_param {
-    source: "data/train_filtered_h5_list.txt"
+    source: "data/train_filtered_mb5_v2_h5_list.txt"
     batch_size: 24 
   }
 }
@@ -57,7 +57,7 @@ layer{
     phase: TEST
   }
   hdf5_data_param {
-    source: "data/val_h5_list.txt"
+    source: "data/val_filtered_mean_h5_list.txt"
     batch_size: 24
   }
 } 

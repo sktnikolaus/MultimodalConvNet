@@ -25,7 +25,7 @@ log_file = open('log_'+t+'.txt','w')
 caffe.set_device(0)
 caffe.set_mode_gpu()
 
-solver = caffe.SGDSolver('vggnet_weighted_solver_adagrad.prototxt')
+solver = caffe.SGDSolver('vggnet_solver_adagrad.prototxt')
 solver.net.copy_from('VGG_CNN_S.caffemodel')
 # TESTING FORWARD
 solver.net.forward()  # train net
@@ -79,22 +79,17 @@ try:
 
 	        for idx,concept in enumerate(label_list):
 		
-		    preds = np.abs(solver.test_nets[0].blobs['fc9_'+concept].data).argmax(1)
+		    preds = solver.test_nets[0].blobs['fc9_'+concept].data.argmax(1)
 		    inv_preds = np.ones((24))-preds
                     trues = solver.test_nets[0].blobs['label_'+concept].data
 		    inv_trues = np.ones((24))-trues
-	    	    dp=preds.dot(trues)
-		    TPR[idx] += dp
-		    idp = inv_preds.dot(inv_trues)
-		    #if it!=0:
-		    #    print 'POS',preds,trues,dp
-		    #    print 'INV',inv_preds,inv_trues,idp
-		    TPR0[idx] += idp
+	    	    TPR[idx] += preds.dot(trues)
+		    TPR0[idx] += inv_preds.dot(inv_trues)
 		    true_positives[idx]+= sum(trues)
 		    pred_positives[idx]+= sum(preds)
 		    true_negatives[idx]+= sum(inv_trues)
 		    pred_negatives[idx]+= sum(inv_preds)
-		    correct[idx]+=sum(np.abs(solver.test_nets[0].blobs['fc9_'+concept].data).argmax(1)==solver			.test_nets[0].blobs['label_'+concept].data)
+		    correct[idx]+=sum(solver.test_nets[0].blobs['fc9_'+concept].data.argmax(1)==solver			.test_nets[0].blobs['label_'+concept].data)
             print "Metrics..."
 	    print "Pos. Predictions",pred_positives
 	    print "True Positives",true_positives
@@ -134,7 +129,6 @@ except KeyboardInterrupt:
 	log_file.write(concept+'=['+','.join([str(elem) for elem in balanced[idx]])+']\n')    
     #log_file.write(TPRs)
     #log_file.write(precs)
-    print 'timestamp',t
     log_file.close()
 except:
     print "error"
